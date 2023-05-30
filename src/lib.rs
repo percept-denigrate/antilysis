@@ -1,3 +1,8 @@
+//! # Antilysis
+//!
+//! Library to detect analysis on windows to protect your program from it. 
+//! Anti-VM, anti-sandbox, anti-analyzing.
+
 use sysinfo::{ProcessExt, System, SystemExt};
 
 /// Returns whether or not any sign of analysis environment is present.
@@ -26,7 +31,7 @@ pub fn detected() -> bool{
 /// }
 /// ```
 pub fn processes() -> bool{
-    let analysers = vec![
+    let analyzers = vec![
         "Wireshark.exe",
         "procexp64.exe",
         "procexp.exe",
@@ -50,7 +55,7 @@ pub fn processes() -> bool{
 
     let s = System::new_all();
     for (_pid, process) in s.processes() {
-        if analysers.contains(&process.name()) || vms.contains(&process.name()) {
+        if analyzers.contains(&process.name()) || vms.contains(&process.name()) {
             return true;
         }
     }
