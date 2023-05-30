@@ -7,7 +7,7 @@ use sysinfo::{ProcessExt, System, SystemExt};
 /// ```
 /// use std::env;
 /// 
-/// if anti_analysis::detected(){
+/// if antilysis::detected(){
 ///     process::exit(0);
 /// }
 /// ```
@@ -21,7 +21,7 @@ pub fn detected() -> bool{
 /// ```
 /// use std::env;
 /// 
-/// if anti_analysis::processes(){
+/// if antilysis::processes(){
 ///     process::exit(0);
 /// }
 /// ```
@@ -57,7 +57,17 @@ pub fn processes() -> bool{
     return false;
 }
 
-fn sandbox() -> bool{
+/// Returns whether or not any common sandbox artifact is present.
+/// 
+/// Use:
+/// ```
+/// use std::env;
+/// 
+/// if antilysis::detected(){
+///     process::exit(0);
+/// }
+/// ```
+pub fn sandbox() -> bool{
     let sys = System::new_all();
     let windows_version = sys.os_version().unwrap().chars().next().unwrap();
     if windows_version == '0' {
