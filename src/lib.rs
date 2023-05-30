@@ -20,7 +20,7 @@ pub fn detected() -> bool{
     return processes() || sandbox();
 }
 
-/// Returns whether or not suspicious processes have been found. Includes analyser (wireshark, process explorer, etc...) and VM guest processes.
+/// Returns whether or not suspicious processes have been found. Includes analyzers (wireshark, process explorer, etc...) and VM guest processes.
 /// 
 /// Use:
 /// ```
