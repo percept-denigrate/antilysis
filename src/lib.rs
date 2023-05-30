@@ -5,7 +5,7 @@ use sysinfo::{ProcessExt, System, SystemExt};
 /// 
 /// Use:
 /// ```
-/// use std::env;
+/// use std::process;
 /// 
 /// if antilysis::detected(){
 ///     process::exit(0);
@@ -19,7 +19,7 @@ pub fn detected() -> bool{
 /// 
 /// Use:
 /// ```
-/// use std::env;
+/// use std::process;
 /// 
 /// if antilysis::processes(){
 ///     process::exit(0);
@@ -61,7 +61,7 @@ pub fn processes() -> bool{
 /// 
 /// Use:
 /// ```
-/// use std::env;
+/// use std::process;
 /// 
 /// if antilysis::detected(){
 ///     process::exit(0);
