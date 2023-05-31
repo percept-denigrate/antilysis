@@ -1,6 +1,6 @@
 [package]
 name = "antilysis"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "Anti-analysis and anti-vm for windows"
 license = "MIT"
