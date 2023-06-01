@@ -68,7 +68,7 @@ pub fn processes() -> bool{
 /// ```
 /// use std::process;
 /// 
-/// if antilysis::detected(){
+/// if antilysis::sandbox(){
 ///     process::exit(0);
 /// }
 /// ```
