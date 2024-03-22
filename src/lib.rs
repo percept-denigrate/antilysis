@@ -40,7 +40,11 @@ pub fn processes() -> bool{
         "pestudio.exe",
         "KsDumper.exe",
         "prl_cc.exe",
-        "prl_tools.exe"
+        "prl_tools.exe",
+        "pe-sieve64.exe",
+        "hollows_hunter32.exe",
+        "Moneta64.exe",
+        "fakenet.exe"
     ];
 
     let vms = vec![
