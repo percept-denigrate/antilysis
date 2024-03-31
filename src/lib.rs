@@ -3,7 +3,7 @@
 //! Library to detect analysis on windows to protect your program from it. 
 //! Anti-VM, anti-sandbox, anti-analyzing.
 
-use sysinfo::{ProcessExt, System, SystemExt};
+use sysinfo::System;
 
 /// Returns whether or not any sign of analysis environment is present.
 /// Is true if processes() or sandbox() is true.
@@ -77,12 +77,11 @@ pub fn processes() -> bool{
 /// }
 /// ```
 pub fn sandbox() -> bool{
-    let sys = System::new_all();
-    let windows_version = sys.os_version().unwrap().chars().next().unwrap();
+    let windows_version = System::os_version().unwrap().chars().next().unwrap();
     if windows_version == '0' {
         return true;
     }
-    let host = sys.host_name().unwrap().to_lowercase();
+    let host = System::host_name().unwrap().to_lowercase();
     if host == "john-pc"{
         return true;
     }
