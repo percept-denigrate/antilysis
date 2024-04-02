@@ -54,7 +54,11 @@ pub fn processes() -> bool{
         "vmtoolsd.exe",
         "VMwareTray.exe",
         "vmsrvc.exe",
-        "VGAuthService.exe"
+        "VGAuthService.exe",
+        "qemu-ga.exe",
+        "vdagent.exe",
+        "vdservice.exe",
+        "xenservice.exe"
     ];
 
     let s = System::new_all();
