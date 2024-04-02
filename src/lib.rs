@@ -44,7 +44,11 @@ pub fn processes() -> bool{
         "pe-sieve64.exe",
         "hollows_hunter32.exe",
         "Moneta64.exe",
-        "fakenet.exe"
+        "fakenet.exe",
+        "tcpview.exe",
+        "dumpcap.exe",
+        "PETools.exe",
+        "httpdebugger.exe"
     ];
 
     let vms = vec![
@@ -58,7 +62,8 @@ pub fn processes() -> bool{
         "qemu-ga.exe",
         "vdagent.exe",
         "vdservice.exe",
-        "xenservice.exe"
+        "xenservice.exe",
+        "joeboxserver.exe"
     ];
 
     let s = System::new_all();
