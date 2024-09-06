@@ -3,8 +3,7 @@
 //! Library to detect analysis on windows to protect your program from it. 
 //! Anti-VM, anti-sandbox, anti-analyzing.
 
-use std::sync::{Arc, Mutex};
-use std::{thread, time::Duration};
+use std::{thread, time::Duration, sync::{Arc, Mutex}};
 use rdev::{listen, Event, EventType};
 use sysinfo::System;
 
@@ -118,7 +117,7 @@ pub fn wait_for_left_click(min_clicks: u64) {
                     *count += 1;
                 }
             }
-        }).expect("Failed to listen to events");
+        }).unwrap();
     });
 
     loop {
