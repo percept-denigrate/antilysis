@@ -7,4 +7,10 @@ fn main() {
     println!("Processes: {}", antilysis::processes());
     println!("Sandbox: {}", antilysis::sandbox());
     println!("Detected: {}", antilysis::detected());
+<<<<<<< HEAD
 }
+=======
+    antilysis::wait_for_left_click();
+    println!("Left click");
+}
+>>>>>>> 3cc8ff9 (wait for left click)

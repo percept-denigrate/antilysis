@@ -3,6 +3,9 @@
 //! Library to detect analysis on windows to protect your program from it. 
 //! Anti-VM, anti-sandbox, anti-analyzing.
 
+use std::sync::{Arc, Mutex};
+use std::{thread, time::Duration};
+use rdev::{listen, Event, EventType};
 use sysinfo::System;
 
 /// Returns whether or not any sign of analysis environment is present.
@@ -95,4 +98,28 @@ pub fn sandbox() -> bool{
         return true;
     }
     return false;
+}
+
+pub fn wait_for_left_click() {
+    let clicked = Arc::new(Mutex::new(false));
+    let clicked_clone = Arc::clone(&clicked);
+
+    thread::spawn(move || {
+        listen(move |event: Event| {
+            if let EventType::ButtonPress(button) = event.event_type {
+                if button == rdev::Button::Left {
+                    let mut clicked = clicked_clone.lock().unwrap();
+                    *clicked = true;
+                }
+            }
+        }).expect("Failed to listen to events");
+    });
+
+    loop {
+        let clicked = clicked.lock().unwrap();
+        if *clicked {
+            break;
+        }
+        std::thread::sleep(std::time::Duration::from_millis(100));
+    }
 }
