@@ -8,9 +8,13 @@ fn main() {
     println!("Sandbox: {}", antilysis::sandbox());
     println!("Detected: {}", antilysis::detected());
 <<<<<<< HEAD
+<<<<<<< HEAD
 }
 =======
     antilysis::wait_for_left_click();
+=======
+    antilysis::wait_for_left_click(2);
+>>>>>>> af224ff (multiple clicks)
     println!("Left click");
 }
 >>>>>>> 3cc8ff9 (wait for left click)
