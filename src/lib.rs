@@ -100,13 +100,14 @@ pub fn sandbox() -> bool{
     return false;
 }
 
-/// Waits for the user to left click.
+/// Waits for the user to left click. The function takes the number of click to wait for as an argument.
 /// 
 /// Use:
 /// ```
-/// antilysis::wait_for_left_click();
+/// antilysis::wait_for_left_click(1);
 /// ```
-pub fn wait_for_left_click() {
+pub fn wait_for_left_click(min_clicks: u64) {
+    let mut count = 0;
     let clicked = Arc::new(Mutex::new(false));
     let clicked_clone = Arc::clone(&clicked);
 
@@ -122,8 +123,14 @@ pub fn wait_for_left_click() {
     });
 
     loop {
-        let clicked = clicked.lock().unwrap();
-        if *clicked {
+        {
+            let mut clicked = clicked.lock().unwrap();
+            if *clicked {
+                count += 1;
+                *clicked = false;
+            }
+        }
+        if count >= min_clicks {
             break;
         }
         std::thread::sleep(std::time::Duration::from_millis(100));
