@@ -107,30 +107,23 @@ pub fn sandbox() -> bool{
 /// antilysis::wait_for_left_click(1);
 /// ```
 pub fn wait_for_left_click(min_clicks: u64) {
-    let mut count = 0;
-    let clicked = Arc::new(Mutex::new(false));
-    let clicked_clone = Arc::clone(&clicked);
+    let count = Arc::new(Mutex::new(0));
+    let count_clone = Arc::clone(&count);
 
     thread::spawn(move || {
         listen(move |event: Event| {
             if let EventType::ButtonPress(button) = event.event_type {
                 if button == rdev::Button::Left {
-                    let mut clicked = clicked_clone.lock().unwrap();
-                    *clicked = true;
+                    let mut count = count_clone.lock().unwrap();
+                    *count += 1;
                 }
             }
         }).expect("Failed to listen to events");
     });
 
     loop {
-        {
-            let mut clicked = clicked.lock().unwrap();
-            if *clicked {
-                count += 1;
-                *clicked = false;
-            }
-        }
-        if count >= min_clicks {
+        let count = count.lock().unwrap();
+        if *count >= min_clicks {
             break;
         }
         std::thread::sleep(std::time::Duration::from_millis(100));
