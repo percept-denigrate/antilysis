@@ -100,6 +100,12 @@ pub fn sandbox() -> bool{
     return false;
 }
 
+/// Waits for the user to left click.
+/// 
+/// Use:
+/// ```
+/// antilysis::wait_for_left_click();
+/// ```
 pub fn wait_for_left_click() {
     let clicked = Arc::new(Mutex::new(false));
     let clicked_clone = Arc::clone(&clicked);
