@@ -6,7 +6,9 @@
 use std::{thread, time::Duration, sync::{Arc, Mutex}};
 use rdev::{listen, Event, EventType};
 use sysinfo::System;
-use winapi::um::debugapi;
+use winapi::um::processthreadsapi::GetCurrentProcess;
+use winapi::um::debugapi::{CheckRemoteDebuggerPresent, IsDebuggerPresent};
+use winapi::shared::minwindef::{BOOL, PBOOL};
 
 /// Returns whether or not any sign of analysis environment is present.
 /// Is true if processes() or sandbox() is true.
@@ -20,7 +22,7 @@ use winapi::um::debugapi;
 /// }
 /// ```
 pub fn detected() -> bool{
-    return processes() || sandbox();
+    return processes() || sandbox() || debugger();
 }
 
 /// Returns whether or not suspicious processes have been found. Includes analyzers (wireshark, process explorer, etc...) and VM guest processes.
@@ -141,5 +143,10 @@ pub fn wait_for_left_clicks(min_clicks: u64) {
 /// }
 /// ```
 pub fn debugger() -> bool{
-    return IsDebuggerPresent();
+    let mut ispresent: BOOL = 0;
+    let h_process = unsafe { GetCurrentProcess() };
+
+    unsafe {
+        IsDebuggerPresent() != 0 && CheckRemoteDebuggerPresent(h_process, &mut ispresent as PBOOL) != 0 && ispresent != 0
+    }
 }
