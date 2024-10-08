@@ -6,6 +6,7 @@
 use std::{thread, time::Duration, sync::{Arc, Mutex}};
 use rdev::{listen, Event, EventType};
 use sysinfo::System;
+use winapi::um::debugapi;
 
 /// Returns whether or not any sign of analysis environment is present.
 /// Is true if processes() or sandbox() is true.
@@ -140,13 +141,5 @@ pub fn wait_for_left_clicks(min_clicks: u64) {
 /// }
 /// ```
 pub fn debugger() -> bool{
-    let windows_version = System::os_version().unwrap().chars().next().unwrap();
-    if windows_version == '0' {
-        return true;
-    }
-    let host = System::host_name().unwrap().to_lowercase();
-    if host == "john-pc"{
-        return true;
-    }
-    return false;
+    return IsDebuggerPresent();
 }
