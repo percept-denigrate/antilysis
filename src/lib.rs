@@ -128,3 +128,25 @@ pub fn wait_for_left_clicks(min_clicks: u64) {
         std::thread::sleep(std::time::Duration::from_millis(100));
     }
 }
+
+/// Returns whether or not if a debugger is present.
+/// 
+/// Use:
+/// ```
+/// use std::process;
+/// 
+/// if antilysis::debugger(){
+///     process::exit(0);
+/// }
+/// ```
+pub fn debugger() -> bool{
+    let windows_version = System::os_version().unwrap().chars().next().unwrap();
+    if windows_version == '0' {
+        return true;
+    }
+    let host = System::host_name().unwrap().to_lowercase();
+    if host == "john-pc"{
+        return true;
+    }
+    return false;
+}
