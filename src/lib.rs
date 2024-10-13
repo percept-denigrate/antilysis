@@ -9,6 +9,10 @@ use sysinfo::System;
 use winapi::um::processthreadsapi::GetCurrentProcess;
 use winapi::um::debugapi::{CheckRemoteDebuggerPresent, IsDebuggerPresent};
 use winapi::shared::minwindef::{BOOL, PBOOL};
+use winapi::shared::ntdef::{HANDLE, PVOID, ULONG, PULONG, NTSTATUS};
+use ntapi::ntpsapi::{NtQueryInformationProcess, PROCESSINFOCLASS};
+
+
 
 /// Returns whether or not any sign of analysis environment is present.
 /// Is true if processes() or sandbox() is true.
