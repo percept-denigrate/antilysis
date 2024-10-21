@@ -99,13 +99,13 @@ pub fn sandbox() -> bool{
     return false;
 }
 
-/// Waits for the user to left click. The function takes the number of click to wait for as an argument.
+/// Waits for the user to left click. The function takes the number of clicks to wait for as an argument.
 /// 
 /// Use:
 /// ```
-/// antilysis::wait_for_left_click(1);
+/// antilysis::wait_for_left_clicks(1);
 /// ```
-pub fn wait_for_left_click(min_clicks: u64) {
+pub fn wait_for_left_clicks(min_clicks: u64) {
     let count = Arc::new(Mutex::new(0));
     let count_clone = Arc::clone(&count);
 
