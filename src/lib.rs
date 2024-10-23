@@ -29,7 +29,7 @@ pub fn detected() -> bool{
     return processes() || sandbox() || debugger();
 }
 
-/// Returns whether or not suspicious processes have been found. Includes analyzers (wireshark, process explorer, etc...) and VM guest processes.
+/// Returns whether or not suspicious processes have been found. Includes analyzers (wireshark, process explorer, etc...) VM guest processes and debuggers processes.
 /// 
 /// Use:
 /// ```
@@ -75,9 +75,22 @@ pub fn processes() -> bool{
         "joeboxserver.exe"
     ];
 
+    let debuggers = vec![
+        "WinDbg.exe",
+        "devenv.exe", // Visual Studio Debugger
+        "drwtsn32.exe", // Dr. Watson
+        "ollydbg.exe",
+        "x64dbg.exe",
+        "gdb.exe", // gdb via WSL
+        "dbgview.exe", // DebugView
+        "procdump.exe", // ProcDump
+        "ntsd.exe", // NTSD (Console version of WinDbg)
+        "windbgX.exe", // WinDbg Preview
+    ];
+
     let s = System::new_all();
     for (_pid, process) in s.processes() {
-        if analyzers.contains(&process.name()) || vms.contains(&process.name()) {
+        if analyzers.contains(&process.name()) || vms.contains(&process.name()) || debuggers.contains(&process.name()) {
             return true;
         }
     }
