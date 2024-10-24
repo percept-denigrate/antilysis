@@ -7,7 +7,7 @@ fn main() {
     println!("Processes: {}", antilysis::processes());
     println!("Sandbox: {}", antilysis::sandbox());
     println!("Detected: {}", antilysis::detected());
-    
+    println!("Debugger: {}", antilysis::debugger());
     antilysis::wait_for_left_clicks(2);
     println!("Left click");
 }

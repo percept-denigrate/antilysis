@@ -149,7 +149,7 @@ pub fn wait_for_left_clicks(min_clicks: u64) {
     }
 }
 
-/// Returns whether or not if a debugger is present.
+/// Returns whether or not a debugger is present.
 /// 
 /// Use:
 /// ```
