@@ -3,15 +3,14 @@
 //! Library to detect analysis on windows to protect your program from it. 
 //! Anti-VM, anti-sandbox, anti-analyzing.
 
-use std::{thread, time::Duration, sync::{Arc, Mutex}};
+use std::{thread, sync::{Arc, Mutex}, ptr};
 use rdev::{listen, Event, EventType};
 use sysinfo::System;
 use winapi::um::processthreadsapi::GetCurrentProcess;
 use winapi::um::debugapi::{CheckRemoteDebuggerPresent, IsDebuggerPresent};
 use winapi::shared::minwindef::{BOOL, PBOOL};
-use winapi::shared::ntdef::{HANDLE, PVOID, ULONG, PULONG, NTSTATUS};
-use ntapi::ntpsapi::{NtQueryInformationProcess, PROCESSINFOCLASS};
-
+use winapi::shared::ntdef::HANDLE;
+use ntapi::ntpsapi::{NtSetInformationThread, ThreadHideFromDebugger};
 
 
 /// Returns whether or not any sign of analysis environment is present.
@@ -26,7 +25,7 @@ use ntapi::ntpsapi::{NtQueryInformationProcess, PROCESSINFOCLASS};
 /// }
 /// ```
 pub fn detected() -> bool{
-    return processes() || sandbox() || debugger();
+    return processes() || sandbox() || is_debugger_present();
 }
 
 /// Returns whether or not suspicious processes have been found. Includes analyzers (wireshark, process explorer, etc...) VM guest processes and debuggers processes.
@@ -155,15 +154,33 @@ pub fn wait_for_left_clicks(min_clicks: u64) {
 /// ```
 /// use std::process;
 /// 
-/// if antilysis::debugger(){
+/// if antilysis::is_debugger_present(){
 ///     process::exit(0);
 /// }
 /// ```
-pub fn debugger() -> bool{
+pub fn is_debugger_present() -> bool{
     let mut ispresent: BOOL = 0;
     let h_process = unsafe { GetCurrentProcess() };
-
     unsafe {
         IsDebuggerPresent() != 0 && CheckRemoteDebuggerPresent(h_process, &mut ispresent as PBOOL) != 0 && ispresent != 0
+    }
+}
+
+/// Try to hide the current thread for debuggers.
+/// 
+/// Use:
+/// ```
+/// antilysis::attempt_hide_thread()
+/// ```
+pub fn attempt_hide_thread() {
+    const NT_CURRENT_THREAD: HANDLE = -2i32 as HANDLE;
+    unsafe {
+        // Try to hide the current thread for debuggers.
+        let _status = NtSetInformationThread(
+            NT_CURRENT_THREAD,
+            ThreadHideFromDebugger,
+            ptr::null_mut(),
+            0,
+        );
     }
 }

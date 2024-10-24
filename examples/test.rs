@@ -7,6 +7,9 @@ fn main() {
     println!("Processes: {}", antilysis::processes());
     println!("Sandbox: {}", antilysis::sandbox());
     println!("Detected: {}", antilysis::detected());
+    println!("Debugger: {}", antilysis::is_debugger_present());
+    println!("Process hide: {}", antilysis::attempt_hide_thread());
+    
     
     antilysis::wait_for_left_clicks(2);
     println!("Left click");
