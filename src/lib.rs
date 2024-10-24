@@ -190,7 +190,6 @@ pub fn is_debugger_present() -> bool{
 pub fn attempt_hide_thread() {
     const NT_CURRENT_THREAD: HANDLE = -2i32 as HANDLE;
     unsafe {
-        // Try to hide the current thread for debuggers.
         let _status = NtSetInformationThread(
             NT_CURRENT_THREAD,
             ThreadHideFromDebugger,
