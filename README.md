@@ -1,11 +1,11 @@
 # Antilysis
 
-Rust library to prevent windows programs from being analyzed. 
+Rust library implementing state-of-the-art dynamic analysis countering techniques on Windows
 
-Can detect:
-- VM guest processes
-- common analysis tools like wireshark, process explorer, etc...
-- common antivirus sandbox artifacts
+- Detects VM guest processes
+- Detects common analysis tools like wireshark, process explorer, etc...
+- Detects common antivirus sandbox artifacts
+- Reverse Turing test: waits for user to left click
 
 ## Inspirations
 

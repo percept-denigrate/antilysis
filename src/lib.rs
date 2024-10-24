@@ -3,7 +3,16 @@
 //! Library to detect analysis on windows to protect your program from it. 
 //! Anti-VM, anti-sandbox, anti-analyzing.
 
+use std::{thread, time::Duration, sync::{Arc, Mutex}};
+use rdev::{listen, Event, EventType};
 use sysinfo::System;
+use winapi::um::processthreadsapi::GetCurrentProcess;
+use winapi::um::debugapi::{CheckRemoteDebuggerPresent, IsDebuggerPresent};
+use winapi::shared::minwindef::{BOOL, PBOOL};
+use winapi::shared::ntdef::{HANDLE, PVOID, ULONG, PULONG, NTSTATUS};
+use ntapi::ntpsapi::{NtQueryInformationProcess, PROCESSINFOCLASS};
+
+
 
 /// Returns whether or not any sign of analysis environment is present.
 /// Is true if processes() or sandbox() is true.
@@ -17,10 +26,10 @@ use sysinfo::System;
 /// }
 /// ```
 pub fn detected() -> bool{
-    return processes() || sandbox();
+    return processes() || sandbox() || debugger();
 }
 
-/// Returns whether or not suspicious processes have been found. Includes analyzers (wireshark, process explorer, etc...) and VM guest processes.
+/// Returns whether or not suspicious processes have been found. Includes analyzers (wireshark, process explorer, etc...) VM guest processes and debuggers processes.
 /// 
 /// Use:
 /// ```
@@ -66,9 +75,22 @@ pub fn processes() -> bool{
         "joeboxserver.exe"
     ];
 
+    let debuggers = vec![
+        "WinDbg.exe",
+        "devenv.exe", // Visual Studio Debugger
+        "drwtsn32.exe", // Dr. Watson
+        "ollydbg.exe",
+        "x64dbg.exe",
+        "gdb.exe", // gdb via WSL
+        "dbgview.exe", // DebugView
+        "procdump.exe", // ProcDump
+        "ntsd.exe", // NTSD (Console version of WinDbg)
+        "windbgX.exe", // WinDbg Preview
+    ];
+
     let s = System::new_all();
     for (_pid, process) in s.processes() {
-        if analyzers.contains(&process.name()) || vms.contains(&process.name()) {
+        if analyzers.contains(&process.name()) || vms.contains(&process.name()) || debuggers.contains(&process.name()) {
             return true;
         }
     }
@@ -95,4 +117,53 @@ pub fn sandbox() -> bool{
         return true;
     }
     return false;
+}
+
+/// Waits for the user to left click. The function takes the number of clicks to wait for as an argument.
+/// 
+/// Use:
+/// ```
+/// antilysis::wait_for_left_clicks(1);
+/// ```
+pub fn wait_for_left_clicks(min_clicks: u64) {
+    let count = Arc::new(Mutex::new(0));
+    let count_clone = Arc::clone(&count);
+
+    thread::spawn(move || {
+        listen(move |event: Event| {
+            if let EventType::ButtonPress(button) = event.event_type {
+                if button == rdev::Button::Left {
+                    let mut count = count_clone.lock().unwrap();
+                    *count += 1;
+                }
+            }
+        }).unwrap();
+    });
+
+    loop {
+        let count = count.lock().unwrap();
+        if *count >= min_clicks {
+            break;
+        }
+        std::thread::sleep(std::time::Duration::from_millis(100));
+    }
+}
+
+/// Returns whether or not if a debugger is present.
+/// 
+/// Use:
+/// ```
+/// use std::process;
+/// 
+/// if antilysis::debugger(){
+///     process::exit(0);
+/// }
+/// ```
+pub fn debugger() -> bool{
+    let mut ispresent: BOOL = 0;
+    let h_process = unsafe { GetCurrentProcess() };
+
+    unsafe {
+        IsDebuggerPresent() != 0 && CheckRemoteDebuggerPresent(h_process, &mut ispresent as PBOOL) != 0 && ispresent != 0
+    }
 }
