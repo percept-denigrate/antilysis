@@ -19,7 +19,7 @@ use winapi::shared::ws2def::AF_UNSPEC;
 use ntapi::ntpsapi::{NtSetInformationThread, ThreadHideFromDebugger};
 
 /// Returns whether or not any sign of analysis environment is present.
-/// Is true if processes() or sandbox() is true.
+/// Is true if one of the following is true: processes(), is_debugger_present(), comparaison_known_mac_addr(), vm_file_detected(), sandbox().
 /// 
 /// Use:
 /// ```
