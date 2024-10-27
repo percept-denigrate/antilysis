@@ -6,6 +6,8 @@ Rust library implementing state-of-the-art dynamic analysis countering technique
 - Detects common analysis tools like wireshark, process explorer, etc...
 - Detects common antivirus sandbox artifacts
 - Reverse Turing test: waits for user to left click
+- Checks if the mac address matches patterns of VM mac addresses
+- Detects VM related files 
 
 ## Inspirations
 
