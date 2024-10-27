@@ -16,9 +16,7 @@ use winapi::um::handleapi::INVALID_HANDLE_VALUE;
 use winapi::shared::minwindef::{BOOL, PBOOL};
 use winapi::shared::ntdef::{HANDLE, PVOID, ULONG, PULONG, NTSTATUS};
 use winapi::shared::ws2def::AF_UNSPEC;
-use ntapi::ntpsapi::{NtQueryInformationProcess, PROCESSINFOCLASS};
-
-
+use ntapi::ntpsapi::{NtSetInformationThread, ThreadHideFromDebugger};
 
 /// Returns whether or not any sign of analysis environment is present.
 /// Is true if processes() or sandbox() is true.
@@ -271,5 +269,22 @@ pub fn comparaison_known_mac_addr() -> bool {
             return false;
         }
         return false;
+    }
+}
+/// Try to hide the current thread for debuggers.
+/// 
+/// Use:
+/// ```
+/// antilysis::attempt_hide_thread()
+/// ```
+pub fn attempt_hide_thread() {
+    const NT_CURRENT_THREAD: HANDLE = -2i32 as HANDLE;
+    unsafe {
+        let _status = NtSetInformationThread(
+            NT_CURRENT_THREAD,
+            ThreadHideFromDebugger,
+            ptr::null_mut(),
+            0,
+        );
     }
 }
