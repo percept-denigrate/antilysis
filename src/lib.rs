@@ -152,7 +152,7 @@ pub fn wait_for_left_clicks(min_clicks: u64) {
     }
 }
 
-/// Returns whether or not if a debugger is present.
+/// Returns whether or not a debugger is present.
 /// 
 /// Use:
 /// ```
@@ -251,7 +251,6 @@ pub fn comparaison_known_mac_addr() -> bool {
                         return true;
                     }
                 }
-                // Passage à l'adaptateur suivant
                 current_adapter = adapter.Next;
             }
         } else {
