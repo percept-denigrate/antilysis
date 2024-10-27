@@ -3,13 +3,16 @@
 //! Library to detect analysis on windows to protect your program from it. 
 //! Anti-VM, anti-sandbox, anti-analyzing.
 
-use std::{thread, time::Duration, sync::{Arc, Mutex}};
+use std::{thread, time::Duration, sync::{Arc, Mutex}, ptr, path::Path};
 use rdev::{listen, Event, EventType};
 use sysinfo::System;
 use winapi::um::processthreadsapi::GetCurrentProcess;
 use winapi::um::debugapi::{CheckRemoteDebuggerPresent, IsDebuggerPresent};
+use winapi::um::iphlpapi::GetAdaptersAddresses;
+use winapi::um::iptypes::{GAA_FLAG_INCLUDE_ALL_INTERFACES, IP_ADAPTER_ADDRESSES};
 use winapi::shared::minwindef::{BOOL, PBOOL};
 use winapi::shared::ntdef::{HANDLE, PVOID, ULONG, PULONG, NTSTATUS};
+use winapi::shared::ws2def::AF_UNSPEC;
 use ntapi::ntpsapi::{NtQueryInformationProcess, PROCESSINFOCLASS};
 
 
@@ -149,7 +152,7 @@ pub fn wait_for_left_clicks(min_clicks: u64) {
     }
 }
 
-/// Returns whether or not if a debugger is present.
+/// Returns whether or not a debugger is present.
 /// 
 /// Use:
 /// ```
@@ -165,5 +168,94 @@ pub fn debugger() -> bool{
 
     unsafe {
         IsDebuggerPresent() != 0 && CheckRemoteDebuggerPresent(h_process, &mut ispresent as PBOOL) != 0 && ispresent != 0
+    }
+}
+
+/// Returns whether or not any VM specific files (Virtual Box and Vmware) are present.
+/// 
+/// Use:
+/// ```
+/// use std::process;
+/// 
+/// if antilysis::vm_file_detected(){
+///     process::exit(0);
+/// }
+/// ```
+pub fn vm_file_detected() -> bool{
+    let file_paths = vec![
+        "C:\\windows\\System32\\Drivers\\Vmmouse.sys",
+        "C:\\windows\\System32\\Drivers\\vm3dgl.dll",
+        "C:\\windows\\System32\\Drivers\\vmdum.dll",
+        "C:\\windows\\System32\\Drivers\\vm3dver.dll",
+        "C:\\windows\\System32\\Drivers\\vmtray.dll",
+        "C:\\windows\\System32\\Drivers\\VMToolsHook.dll",
+        "C:\\windows\\System32\\Drivers\\vmmousever.dll",
+        "C:\\windows\\System32\\Drivers\\vmhgfs.dll",
+        "C:\\windows\\System32\\Drivers\\vmGuestLib.dll",
+        "C:\\windows\\System32\\Drivers\\VmGuestLibJava.dll",
+        "C:\\windows\\System32\\Drivers\\VBoxMouse.sys",
+        "C:\\windows\\System32\\Drivers\\VBoxGuest.sys",
+        "C:\\windows\\System32\\Drivers\\VBoxSF.sys",
+        "C:\\windows\\System32\\Drivers\\VBoxVideo.sys",
+        "C:\\windows\\System32\\vboxdisp.dll",
+        "C:\\windows\\System32\\vboxhook.dll",
+        "C:\\windows\\System32\\vboxmrxnp.dll",
+        "C:\\windows\\System32\\vboxogl.dll",
+        "C:\\windows\\System32\\vboxoglarrayspu.dll",
+        "C:\\windows\\System32\\vboxoglcrutil.dll",
+        "C:\\windows\\System32\\vboxoglerrorspu.dll",
+        "C:\\windows\\System32\\vboxoglfeedbackspu.dll",
+        "C:\\windows\\System32\\vboxoglpackspu.dll",
+        "C:\\windows\\System32\\vboxoglpassthroughspu.dll",
+        "C:\\windows\\System32\\vboxservice.exe",
+        "C:\\windows\\System32\\vboxtray.exe",
+        "C:\\windows\\System32\\VBoxControl.exe",
+    ];
+    for path in file_paths { if Path::new(path).exists() { return true; } } 
+    return false;
+}
+
+/// Returns if the mac addresses indicates a VM running with Virtual Box or VMware.
+/// 
+/// Use:
+/// ```
+/// use std::process;
+/// 
+/// if antilysis::comparaison_known_mac_addr(){
+///     process::exit(0);
+/// }
+/// ```
+pub fn comparaison_known_mac_addr() -> bool {
+    let known_mac_addr: Vec<[u8; 6]> = vec![
+        [0x00, 0x05, 0x69, 0x00, 0x00, 0x00], // 00:05:69 Vmware
+        [0x00, 0x0C, 0x29, 0x00, 0x00, 0x00], // 00:0C:29 Vmware
+        [0x00, 0x1C, 0x14, 0x00, 0x00, 0x00], // 00:1C:14 Vmware
+        [0x00, 0x50, 0x56, 0x00, 0x00, 0x00], // 00:50:56 Vmware
+        [0x08, 0x00, 0x27, 0x00, 0x00, 0x00], // 08:00:27 Virtual Box
+    ];
+
+    unsafe {
+        let mut out_buf_len: ULONG = 0;
+        GetAdaptersAddresses(AF_UNSPEC.try_into().unwrap(), GAA_FLAG_INCLUDE_ALL_INTERFACES, ptr::null_mut(), ptr::null_mut(), &mut out_buf_len);
+        let mut buffer: Vec<u8> = vec![0; out_buf_len as usize];
+        let adapters_ptr: *mut IP_ADAPTER_ADDRESSES = buffer.as_mut_ptr() as *mut IP_ADAPTER_ADDRESSES;
+        let result = GetAdaptersAddresses(AF_UNSPEC.try_into().unwrap(), GAA_FLAG_INCLUDE_ALL_INTERFACES, ptr::null_mut(), adapters_ptr, &mut out_buf_len);
+        if result == 0 {
+            let mut current_adapter = adapters_ptr;
+            while !current_adapter.is_null() {
+                let adapter = &*current_adapter;
+                for i in 0..known_mac_addr.len() {
+                    if (known_mac_addr[i][0] == adapter.PhysicalAddress[0]) &&
+                    (known_mac_addr[i][1] == adapter.PhysicalAddress[1]) &&
+                    (known_mac_addr[i][2] == adapter.PhysicalAddress[2]) {
+                        return true;
+                    }
+                }
+                current_adapter = adapter.Next;
+            }
+        } else {
+            return false;
+        }
+        return false;
     }
 }
