@@ -10,6 +10,7 @@ Rust library implementing state-of-the-art dynamic analysis countering technique
 - Detects VM related files 
 - Checks the presence of debuggers by reading the Process Environment Block (PEB)
 - Checks the presence of the "\\.\NTICE" device (named pipe) which is used to communicate with SoftIce, a Windows kernel debugger
+- Possibility to hide thread from debuggers
 
 ## Inspirations
 
