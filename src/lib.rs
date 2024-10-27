@@ -8,8 +8,11 @@ use rdev::{listen, Event, EventType};
 use sysinfo::System;
 use winapi::um::processthreadsapi::GetCurrentProcess;
 use winapi::um::debugapi::{CheckRemoteDebuggerPresent, IsDebuggerPresent};
+use winapi::um::fileapi::{CreateFileA, OPEN_EXISTING};
 use winapi::um::iphlpapi::GetAdaptersAddresses;
 use winapi::um::iptypes::{GAA_FLAG_INCLUDE_ALL_INTERFACES, IP_ADAPTER_ADDRESSES};
+use winapi::um::winnt::{GENERIC_READ, FILE_ATTRIBUTE_NORMAL};
+use winapi::um::handleapi::INVALID_HANDLE_VALUE;
 use winapi::shared::minwindef::{BOOL, PBOOL};
 use winapi::shared::ntdef::{HANDLE, PVOID, ULONG, PULONG, NTSTATUS};
 use winapi::shared::ws2def::AF_UNSPEC;
@@ -29,7 +32,7 @@ use ntapi::ntpsapi::{NtQueryInformationProcess, PROCESSINFOCLASS};
 /// }
 /// ```
 pub fn detected() -> bool{
-    return processes() || sandbox() || debugger();
+    return processes() || sandbox() || is_debugger_present() || comparaison_known_mac_addr() || vm_file_detected();
 }
 
 /// Returns whether or not suspicious processes have been found. Includes analyzers (wireshark, process explorer, etc...) VM guest processes and debuggers processes.
@@ -158,16 +161,27 @@ pub fn wait_for_left_clicks(min_clicks: u64) {
 /// ```
 /// use std::process;
 /// 
-/// if antilysis::debugger(){
+/// if antilysis::is_debugger_present(){
 ///     process::exit(0);
 /// }
 /// ```
-pub fn debugger() -> bool{
+pub fn is_debugger_present() -> bool{
     let mut ispresent: BOOL = 0;
     let h_process = unsafe { GetCurrentProcess() };
-
+    let device_name = "\\\\.\\NTICE\0".as_ptr() as *const i8;
     unsafe {
-        IsDebuggerPresent() != 0 && CheckRemoteDebuggerPresent(h_process, &mut ispresent as PBOOL) != 0 && ispresent != 0
+        IsDebuggerPresent() != 0 && 
+        CheckRemoteDebuggerPresent(h_process, &mut ispresent as PBOOL) != 0 && 
+        ispresent != 0 &&
+        CreateFileA(
+            device_name,
+            GENERIC_READ,
+            0,
+            ptr::null_mut(),
+            OPEN_EXISTING,
+            FILE_ATTRIBUTE_NORMAL,
+            ptr::null_mut(),
+        ) != INVALID_HANDLE_VALUE
     }
 }
 
