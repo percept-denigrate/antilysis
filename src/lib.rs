@@ -32,7 +32,7 @@ use ntapi::ntpsapi::{NtQueryInformationProcess, PROCESSINFOCLASS};
 /// }
 /// ```
 pub fn detected() -> bool{
-    return processes() || sandbox() || is_debugger_present();
+    return processes() || sandbox() || is_debugger_present() || comparaison_known_mac_addr() || vm_file_detected();
 }
 
 /// Returns whether or not suspicious processes have been found. Includes analyzers (wireshark, process explorer, etc...) VM guest processes and debuggers processes.
