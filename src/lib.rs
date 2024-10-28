@@ -275,7 +275,7 @@ pub fn comparaison_known_mac_addr() -> bool {
 /// 
 /// Use:
 /// ```
-/// antilysis::attempt_hide_thread()
+/// antilysis::attempt_hide_thread();
 /// ```
 pub fn attempt_hide_thread() {
     const NT_CURRENT_THREAD: HANDLE = -2i32 as HANDLE;
