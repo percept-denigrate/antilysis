@@ -1,8 +1,8 @@
 [package]
 name = "antilysis"
-version = "0.1.2"
+version = "0.2.0"
 edition = "2021"
-description = "Anti-analysis and anti-vm for windows"
+description = "State-of-the-art dynamic analysis countering techniques on Windows"
 license = "MIT"
 homepage = "https://github.com/percept-denigrate/antilysis"
 repository = "https://github.com/percept-denigrate/antilysis"
@@ -14,3 +14,4 @@ sysinfo = "0.30.7"
 rdev = "0.5.3"
 winapi = { version = "0.3", features = ["winbase", "processenv", "debugapi"] }
 ntapi = "0.4.1"
+
