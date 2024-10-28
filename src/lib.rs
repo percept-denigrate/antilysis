@@ -3,7 +3,7 @@
 //! Library to detect analysis on windows to protect your program from it. 
 //! Anti-VM, anti-sandbox, anti-analyzing.
 
-use std::{thread, time::Duration, sync::{Arc, Mutex}, ptr, path::Path};
+use std::{thread, sync::{Arc, Mutex}, ptr, path::Path};
 use rdev::{listen, Event, EventType};
 use sysinfo::System;
 use winapi::um::processthreadsapi::GetCurrentProcess;
@@ -14,7 +14,7 @@ use winapi::um::iptypes::{GAA_FLAG_INCLUDE_ALL_INTERFACES, IP_ADAPTER_ADDRESSES}
 use winapi::um::winnt::{GENERIC_READ, FILE_ATTRIBUTE_NORMAL};
 use winapi::um::handleapi::INVALID_HANDLE_VALUE;
 use winapi::shared::minwindef::{BOOL, PBOOL};
-use winapi::shared::ntdef::{HANDLE, PVOID, ULONG, PULONG, NTSTATUS};
+use winapi::shared::ntdef::{HANDLE, ULONG};
 use winapi::shared::ws2def::AF_UNSPEC;
 use ntapi::ntpsapi::{NtSetInformationThread, ThreadHideFromDebugger};
 
