@@ -12,6 +12,6 @@ repository = "https://github.com/percept-denigrate/antilysis"
 [dependencies]
 sysinfo = "0.30.7"
 rdev = "0.5.3"
-winapi = { version = "0.3", features = ["winbase", "processenv", "debugapi"] }
+winapi = { version = "0.3", features = ["winbase", "processenv", "debugapi", "iphlpapi", "iptypes"] }
 ntapi = "0.4.1"
 
