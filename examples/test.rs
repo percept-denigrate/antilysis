@@ -10,9 +10,11 @@ fn main() {
     println!("Debugger: {}", antilysis::is_debugger_present());
     println!("Detected: {}", antilysis::detected());
     println!("Known MAC address: {}", antilysis::comparaison_known_mac_addr());
-    println!("Tentative to hide thread...");
+
+    println!("Attempt at hiding thread...");
     antilysis::attempt_hide_thread();
     println!("Done");
+
     antilysis::wait_for_left_clicks(2);
     println!("Left click");
 }
