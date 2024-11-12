@@ -111,16 +111,16 @@ pub fn processes() -> bool{
 ///     process::exit(0);
 /// }
 /// ```
-pub fn sandbox() -> bool{
-    let windows_version = System::os_version().unwrap().chars().next().unwrap();
+pub fn sandbox() -> Option<bool> {
+    let windows_version = System::os_version()?.chars().next()?;
     if windows_version == '0' {
-        return true;
+        return Some(true);
     }
-    let host = System::host_name().unwrap().to_lowercase();
-    if host == "john-pc"{
-        return true;
+    let host = System::host_name()?.to_lowercase();
+    if host == "john-pc" {
+        return Some(true);
     }
-    return false;
+    Some(false)
 }
 
 /// Waits for the user to left click. The function takes the number of clicks to wait for as an argument.
