@@ -29,8 +29,8 @@ use ntapi::ntpsapi::{NtSetInformationThread, ThreadHideFromDebugger};
 ///     process::exit(0);
 /// }
 /// ```
-pub fn detected() -> bool{
-    return processes() || sandbox() || is_debugger_present() || comparaison_known_mac_addr() || vm_file_detected();
+pub fn detected() -> Option<bool>{
+    return Some(processes() || sandbox()? || is_debugger_present() || comparaison_known_mac_addr()? || vm_file_detected());
 }
 
 /// Returns whether or not suspicious processes have been found. Includes analyzers (wireshark, process explorer, etc...) VM guest processes and debuggers processes.
@@ -111,16 +111,16 @@ pub fn processes() -> bool{
 ///     process::exit(0);
 /// }
 /// ```
-pub fn sandbox() -> bool{
-    let windows_version = System::os_version().unwrap().chars().next().unwrap();
+pub fn sandbox() -> Option<bool> {
+    let windows_version = System::os_version()?.chars().next()?;
     if windows_version == '0' {
-        return true;
+        return Some(true);
     }
-    let host = System::host_name().unwrap().to_lowercase();
-    if host == "john-pc"{
-        return true;
+    let host = System::host_name()?.to_lowercase();
+    if host == "john-pc" {
+        return Some(true);
     }
-    return false;
+    Some(false)
 }
 
 /// Waits for the user to left click. The function takes the number of clicks to wait for as an argument.
@@ -237,7 +237,7 @@ pub fn vm_file_detected() -> bool{
 ///     process::exit(0);
 /// }
 /// ```
-pub fn comparaison_known_mac_addr() -> bool {
+pub fn comparaison_known_mac_addr() -> Option<bool> {
     let known_mac_addr: Vec<[u8; 6]> = vec![
         [0x00, 0x05, 0x69, 0x00, 0x00, 0x00], // 00:05:69 Vmware
         [0x00, 0x0C, 0x29, 0x00, 0x00, 0x00], // 00:0C:29 Vmware
@@ -248,10 +248,10 @@ pub fn comparaison_known_mac_addr() -> bool {
 
     unsafe {
         let mut out_buf_len: ULONG = 0;
-        GetAdaptersAddresses(AF_UNSPEC.try_into().unwrap(), GAA_FLAG_INCLUDE_ALL_INTERFACES, ptr::null_mut(), ptr::null_mut(), &mut out_buf_len);
+        GetAdaptersAddresses(AF_UNSPEC.try_into().ok()?, GAA_FLAG_INCLUDE_ALL_INTERFACES, ptr::null_mut(), ptr::null_mut(), &mut out_buf_len);
         let mut buffer: Vec<u8> = vec![0; out_buf_len as usize];
         let adapters_ptr: *mut IP_ADAPTER_ADDRESSES = buffer.as_mut_ptr() as *mut IP_ADAPTER_ADDRESSES;
-        let result = GetAdaptersAddresses(AF_UNSPEC.try_into().unwrap(), GAA_FLAG_INCLUDE_ALL_INTERFACES, ptr::null_mut(), adapters_ptr, &mut out_buf_len);
+        let result = GetAdaptersAddresses(AF_UNSPEC.try_into().ok()?, GAA_FLAG_INCLUDE_ALL_INTERFACES, ptr::null_mut(), adapters_ptr, &mut out_buf_len);
         if result == 0 {
             let mut current_adapter = adapters_ptr;
             while !current_adapter.is_null() {
@@ -260,15 +260,15 @@ pub fn comparaison_known_mac_addr() -> bool {
                     if (known_mac_addr[i][0] == adapter.PhysicalAddress[0]) &&
                     (known_mac_addr[i][1] == adapter.PhysicalAddress[1]) &&
                     (known_mac_addr[i][2] == adapter.PhysicalAddress[2]) {
-                        return true;
+                        return Some(true);
                     }
                 }
                 current_adapter = adapter.Next;
             }
         } else {
-            return false;
+            return Some(false);
         }
-        return false;
+        return Some(false);
     }
 }
 /// Try to hide the current thread for debuggers.
