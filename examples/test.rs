@@ -5,11 +5,11 @@ extern crate antilysis;
 
 fn main() {
     println!("Processes: {}", antilysis::processes());
-    println!("Sandbox: {}", antilysis::sandbox());
+    println!("Sandbox: {}", antilysis::sandbox().unwrap());
     println!("VM files: {}", antilysis::vm_file_detected());
     println!("Debugger: {}", antilysis::is_debugger_present());
-    println!("Detected: {}", antilysis::detected());
-    println!("Known MAC address: {}", antilysis::comparaison_known_mac_addr());
+    println!("Detected: {}", antilysis::detected().unwrap());
+    println!("Known MAC address: {}", antilysis::comparaison_known_mac_addr().unwrap());
 
     println!("Attempt at hiding thread...");
     antilysis::attempt_hide_thread();
