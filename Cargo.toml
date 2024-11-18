@@ -17,4 +17,3 @@ ntapi = "0.4.1"
 
 [package.metadata.docs.rs]
 all-features = true
-
