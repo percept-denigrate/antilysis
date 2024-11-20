@@ -25,8 +25,9 @@ use ntapi::ntpsapi::{NtSetInformationThread, ThreadHideFromDebugger};
 /// ```
 /// use std::process;
 /// 
-/// if antilysis::detected(){
-///     process::exit(0);
+/// match antilysis::detected(){
+///     Some(true) => process::exit(0),
+///     _ => {}
 /// }
 /// ```
 pub fn detected() -> Option<bool>{
@@ -107,8 +108,9 @@ pub fn processes() -> bool{
 /// ```
 /// use std::process;
 /// 
-/// if antilysis::sandbox(){
-///     process::exit(0);
+/// match antilysis::sandbox(){
+///     Some(true) => process::exit(0),
+///     _ => {}
 /// }
 /// ```
 pub fn sandbox() -> Option<bool> {
@@ -233,8 +235,9 @@ pub fn vm_file_detected() -> bool{
 /// ```
 /// use std::process;
 /// 
-/// if antilysis::comparaison_known_mac_addr(){
-///     process::exit(0);
+/// match antilysis::comparaison_known_mac_addr(){
+///     Some(true) => process::exit(0),
+///     _ => {}
 /// }
 /// ```
 pub fn comparaison_known_mac_addr() -> Option<bool> {
