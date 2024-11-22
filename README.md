@@ -2,15 +2,18 @@
 
 Rust library implementing state-of-the-art dynamic analysis countering techniques on Windows
 
+## Features
+
 - Detects VM guest and debugger processes
 - Detects common analysis tools like wireshark, process explorer, etc...
 - Detects common antivirus sandbox artifacts
 - Reverse Turing test: waits for user to left click
 - Checks if the mac address matches patterns of known VM mac addresses
 - Detects VM related files 
-- Checks the presence of debuggers by reading the Process Environment Block (PEB)
-- Checks the presence of the "\\.\NTICE" device (named pipe) which is used to communicate with SoftIce, a Windows kernel debugger
-- Ability to hide thread from debuggers
+- Anti-debugging:
+    - Checks the presence of debuggers by reading the Process Environment Block (PEB)
+    - Checks the presence of the "\\.\NTICE" device (named pipe) which is used to communicate with SoftIce, a Windows kernel debugger
+    - Ability to hide thread from debuggers
 
 ## Inspirations
 
