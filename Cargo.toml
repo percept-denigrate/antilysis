@@ -1,6 +1,6 @@
 [package]
 name = "antilysis"
-version = "0.2.1"
+version = "0.2.2"
 edition = "2021"
 description = "State-of-the-art dynamic analysis countering techniques on Windows"
 license = "MIT"
