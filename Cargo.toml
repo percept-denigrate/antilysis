@@ -17,4 +17,5 @@ ntapi = "0.4.1"
 
 [package.metadata.docs.rs]
 all-features = true
-
+default-target = "x86_64-pc-windows-gnu"
+targets = ["x86_64-pc-windows-gnu", "x86_64-pc-windows-msvc"]
