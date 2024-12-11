@@ -299,7 +299,7 @@ fn ntp_time() -> Option<TimestampFormat> {
     Some(response.transmit_time)
 }
 
-/// Makes the process sleep and times the sleep using NTP. This checks if the pogram is being run in a sandbox that patches sleep functions.
+/// Makes the process sleep and times the sleep using NTP. This checks if the program is being run in a sandbox that patches sleep functions.
 /// 
 /// Use:
 /// ```
