@@ -305,7 +305,7 @@ fn ntp_time() -> Option<TimestampFormat> {
 /// ```
 /// use std::process;
 /// 
-/// match antilysis::secure_sleep(){
+/// match antilysis::secure_sleep(4){
 ///     Some(true) => process::exit(0),
 ///     _ => {}
 /// }
