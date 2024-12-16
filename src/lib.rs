@@ -3,7 +3,7 @@
 //! Library to detect analysis on windows to protect your program from it. 
 //! Anti-VM, anti-sandbox, anti-analyzing.
 
-use std::{thread, sync::{Arc, Mutex}, ptr, path::Path};
+use std::{thread, time, sync::{Arc, Mutex}, ptr, path::Path};
 use rdev::{listen, Event, EventType};
 use sysinfo::System;
 use winapi::um::processthreadsapi::GetCurrentProcess;
@@ -17,6 +17,7 @@ use winapi::shared::minwindef::{BOOL, PBOOL};
 use winapi::shared::ntdef::{HANDLE, ULONG};
 use winapi::shared::ws2def::AF_UNSPEC;
 use ntapi::ntpsapi::{NtSetInformationThread, ThreadHideFromDebugger};
+use ntp::formats::timestamp::TimestampFormat;
 
 /// Returns whether or not any sign of analysis environment is present.
 /// Is true if one of the following is true: processes(), is_debugger_present(), comparaison_known_mac_addr(), vm_file_detected(), sandbox().
@@ -274,7 +275,7 @@ pub fn comparaison_known_mac_addr() -> Option<bool> {
         return Some(false);
     }
 }
-/// Try to hide the current thread for debuggers.
+/// Tries to hide the current thread for debuggers.
 /// 
 /// Use:
 /// ```
@@ -290,4 +291,29 @@ pub fn attempt_hide_thread() {
             0,
         );
     }
+}
+
+fn ntp_time() -> Option<TimestampFormat> {
+    let address = "0.pool.ntp.org:123";
+    let response: ntp::packet::Packet = ntp::request(address).ok()?;
+    Some(response.transmit_time)
+}
+
+/// Makes the process sleep and times the sleep using NTP. This checks if the program is being run in a sandbox that patches sleep functions.
+/// 
+/// Use:
+/// ```
+/// use std::process;
+/// 
+/// match antilysis::secure_sleep(4){
+///     Some(true) => process::exit(0),
+///     _ => {}
+/// }
+/// ```
+pub fn secure_sleep(n: u32) -> Option<bool>{
+    let before = ntp_time()?;
+    thread::sleep(time::Duration::from_millis((n * 1000).into()));
+    let after = ntp_time()?;
+    let diff = after.sec - before.sec;
+    Some(diff < n)
 }
