@@ -18,5 +18,5 @@ fn main() {
     antilysis::wait_for_left_clicks(2);
     println!("Left click");
 
-    println!("Detected: {}", antilysis::secure_sleep(2).unwrap());
+    println!("Sleep patched: {}", antilysis::secure_sleep(2).unwrap());
 }
